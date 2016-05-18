@@ -1,0 +1,154 @@
+{% extends "radar_access/base.html" %}
+
+{% load bootstrap %}
+{% load staticfiles %}
+
+{% block title %}Filter Startups{% endblock %}
+
+{% block header %}
+<h1>Filter Page</h1>
+<p class="help-block">Help me find startups you need.</p>
+{% endblock %}
+
+{% block content %}
+<link type="text/css" rel="stylesheet" href="{% static 'radar_access/bootstrap-tagsinput.css' %}">
+
+
+{% for error in filter_form.non_field_errors %}
+<div class="alert alert-danger">{{error|escape}}</div>
+{% endfor %}
+<div class="row spacer">
+    <div class="col-sm-2 col-md-3"></div>
+    <div class="col-sm-8 col-md-6 text-center">
+        <form role="form" method="post" action="{% url 'radar_access:filter_startups' %}">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.location|bootstrap }}
+                </div>
+                <div class="col-xs-6">
+                    {{ filter_form.location_city|bootstrap }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.stage_min|bootstrap }}
+                </div>
+                <div class="col-xs-6">
+                    {{ filter_form.stage_max|bootstrap }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.founded_min|bootstrap }}
+                </div>
+                <div class="col-xs-6"></div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.money_raised_min|bootstrap }}
+                </div>
+                <div class="col-xs-6">
+                    {{ filter_form.money_raised_max|bootstrap }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.employees_min|bootstrap }}
+                </div>
+                <div class="col-xs-6">
+                    {{ filter_form.employees_max|bootstrap }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label" for="id_revenue_min">Min Revenue</label>
+                        <select class="form-control" id="id_revenue_min" name="revenue_min" disabled>
+                            <option value="0" selected="selected">$0</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label" for="id_revenue_max">Max Revenue</label>
+                        <select class="form-control" id="id_revenue_max" name="revenue_max" disabled>
+                            <option value="0" selected="selected">$500K</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-6">
+                    {{ filter_form.market|bootstrap }}
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label class="control-label" for="id_competitors">Competitor(s)</label>
+                        <input class="form-control" id="id_competitors" name="competitors" type="text" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Apply Filter</button>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-2 col-md-3"></div>
+</div>
+
+<script src="{% static 'radar_access/b3-typeahead.js' %}"></script>
+<script src="{% static 'radar_access/bootstrap-tagsinput.min.js' %}"></script>
+<script>
+$input = $("#id_location_city");
+$input = $input.attr("autocomplete", "off");
+    
+$.get("{% static 'radar_access/cities.json' %}", function(data) {
+    $("#id_location_city").typeahead({
+        source: data
+    });
+    $('#id_location_city').tagsinput({
+        typeahead: {
+            source: data
+        }
+    });
+}, 'json');
+    
+$input = $("#id_location");
+$input = $input.attr("autocomplete", "off");
+    
+$.get("{% static 'radar_access/countries.json' %}", function(data) {
+    $("#id_location").typeahead({
+        source: data
+    });
+    $('#id_location').tagsinput({
+        typeahead: {
+            source: data
+        }
+    });
+}, 'json');
+    
+$.get("{% static 'radar_access/markets.json' %}", function(data) {
+    $("#id_market").typeahead({
+        source: data
+    });
+    $('#id_market').tagsinput({
+        typeahead: {
+            source: data
+        }
+    });
+}, 'json');
+    
+$input.typeahead(
+    {source:
+        /*[
+            {% for class in classes %}
+            {id: {{ class.0 }}, name: "{{ class.1 }}" },
+            {% endfor %}
+        ], */
+        ['red','blue','green','yellow','violet','brown','purple','black','white'],
+        autoSelect: true
+    }
+);
+</script>
+{% endblock %}

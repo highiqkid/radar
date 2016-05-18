@@ -1,0 +1,134 @@
+{% load humanize %}
+{% load bootstrap_pagination %}
+<table class="table table-striped">
+    <tr>
+        <th>
+            <a href="{{ sorting_urls.pk }}">
+                ID
+                {% if sorting.pk == "desc" %}
+                    <span class="caret"></span>
+                {% elif sorting.pk == "asc" %}
+                    <span class="dropup">
+                        <span class="caret"></span>
+                    </span>
+                {% endif %}
+            </a>
+        </th>
+        <th>Logo</th>
+        <th>
+            <a href="{{ sorting_urls.name }}">
+                Name
+                {% if sorting.name == "desc" %}
+                    <span class="caret"></span>
+                {% elif sorting.name == "asc" %}
+                    <span class="dropup">
+                        <span class="caret"></span>
+                    </span>
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="{{ sorting_urls.founded_date }}">
+                Founded
+                {% if sorting.founded_date == "desc" %}
+                    <span class="caret"></span>
+                {% elif sorting.founded_date == "asc" %}
+                    <span class="dropup">
+                        <span class="caret"></span>
+                    </span>
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="{{ sorting_urls.money_raised }}">
+                Raised
+                {% if sorting.money_raised == "desc" %}
+                    <span class="caret"></span>
+                {% elif sorting.money_raised == "asc" %}
+                    <span class="dropup">
+                        <span class="caret"></span>
+                    </span>
+                {% endif %}
+            </a>
+        </th>
+        <th>
+            <a href="{{ sorting_urls.city }}">
+                Location
+                {% if sorting.city == "desc" %}
+                    <span class="caret"></span>
+                {% elif sorting.city == "asc" %}
+                    <span class="dropup">
+                        <span class="caret"></span>
+                    </span>
+                {% endif %}
+            </a>
+        </th>
+    </tr>
+    {% if startups %}
+        {% for startup in startups %}
+        <tr>
+            <td>{{ startup.pk }}</td>
+            <td>
+                <img src="{{ startup.logo }}" width="25px"></td>
+            <td><a href="{% url 'radar_access:startup_detail' startup.id %}">{{ startup.name }}</a></td>
+            <td>{{ startup.founded_date_string }}</td>
+            {% if startup.num_employees != 0 %}
+            <!--<td>{{ startup.num_employees }} employees</td>-->
+            {% else %}
+            <!--<td>n/a</td>-->
+            {% endif %}
+            <td>${{ startup.money_raised|intcomma }}</td>
+            <td>{{ startup.city }}, {{ startup.country_code }}</td>
+            {% if collection %}
+            <td>
+                <a class="btn btn-danger" href="{% url 'radar_access:startup_remove' startup.id %}?collection={{ collection.id }}">
+                    Remove
+                </a>
+            </td>
+            {% elif user.profile.collections.all.count > 0 %}
+            <td>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        {% for c in user.profile.collections.all %}
+                            {% if not startup in c.startups.all %}
+                            <li>
+                                <a href="{% url 'radar_access:startup_add' startup.id %}?collection={{ c.id }}">
+                                    {{ c.name }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </td>
+            {% endif %}
+            
+            {% if not startup in user.profile.following.all %}
+            <td>
+                <a class="btn btn-success" href="{% url 'radar_access:startup_add' startup.id %}">
+                    Follow
+                </a>
+            </td>
+            {% else %}
+            <td>
+                <a class="btn btn-warning" href="{% url 'radar_access:startup_remove' startup.id %}">
+                    Unfollow
+                </a>
+            </td>
+            {% endif %}
+            <td>
+                <a class="btn btn-danger" href="{% url 'radar_access:startup_delete' startup.id %}">
+                    Delete
+                </a>
+            </td>
+            <!--<td><i class="fa fa-times" style="color:#a94442;"></i></td>-->
+        </tr>
+        {% endfor %}
+    {% endif %}
+</table>
+
+<div class="row text-center">
+{% bootstrap_paginate startups range=10 show_prev_next="false" show_first_last="true" %}
+</div>

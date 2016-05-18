@@ -1,0 +1,182 @@
+{% extends "radar_access/base.html" %}
+
+{% load bootstrap %}
+{% load humanize %}
+{% load staticfiles %}
+
+{% block title %}{{ startup.name}}{% endblock %}
+
+{% block header %}
+<h1>
+    {{ startup.name }}
+</h1>
+<div class="row">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4 row text-center">
+        <div class="col-xs-6">
+            {% if user.profile.collections.all.count > 0 %}
+            <div class="dropdown">
+                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add
+                <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                    {% for c in user.profile.collections.all %}
+                        {% if not startup in c.startups.all %}
+                        <li>
+                            <a href="{% url 'radar_access:startup_add' startup.id %}?collection={{ c.id }}">
+                                {{ c.name }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-xs-6">
+            {% if not startup in user.profile.following.all %}
+            <a class="btn btn-success" href="{% url 'radar_access:startup_add' startup.id %}">
+                Follow
+            </a>
+            {% else %}
+            <a class="btn btn-warning" href="{% url 'radar_access:startup_remove' startup.id %}">
+                Unfollow
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-sm-4"></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<hr/>
+<div class="row">
+    <div class="col-xs-4">
+        <img src="{{ startup.logo }}" width="100px" style="float: right;">
+    </div>
+    <div class="col-xs-8">
+        <p class="lead">
+            <span id="shortDesc">
+                {{ short_desc }}
+            </span>
+            {% if full_desc %}
+                <a id="readMore" href="#">Read More</a>
+                <span id="fullDesc">{{ full_desc }}</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-7">
+        <h3>Background</h3>
+        <table class="table">
+            <tr>
+                <td><strong>Raised</strong></td>
+                <td>${{ startup.money_raised|intcomma }}</td>
+            </tr>
+            {% if startup.revenue != "0" %}
+                <tr>
+                    <td><strong>Revenue</strong></td>
+                    <td>{{ startup.revenue|intcomma }}</td>
+                </tr>
+            {% endif %}
+            {% if startup.num_employees != 0 %}
+                <tr>
+                    <td><strong>Employees</strong></td>
+                    <td>{{ startup.num_employees }} employees</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td><strong>Website</strong></td>
+                <td><a target="_blank" href="{{ startup.website }}">{{ startup.website }}</a></td>
+            </tr>
+            <tr>
+                <td><strong>Market</strong></td>
+                <td>{{ startup.market }}</td>
+            </tr>
+            <tr>
+                <td><strong>Categories</strong></td>
+                <td>{{ startup.categories }}</td>
+            </tr>
+            <tr>
+                <td><strong>Location</strong></td>
+                <td>{{ startup.city }}, {{ startup.country_code }}</td>
+            </tr>
+            {% if startup.funding_rounds != 0 %}
+                <tr>
+                    <td><strong>Fundraising Rounds</strong></td>
+                    <td>{{ startup.funding_rounds }} round(s)</td>
+                </tr>
+            {% endif %}
+            {% if startup.investors %}
+                <tr>
+                    <td><strong>Investors</strong></td>
+                    <td>{{ startup.investors }}</td>
+                </tr>
+            {% endif %}
+            {% if startup.team %}
+                <tr>
+                    <td><strong>Team</strong></td>
+                    <td>{{ startup.team }}</td>
+                </tr>
+            {% endif %}
+            {% if startup.angellist_url %}
+                <tr>
+                    <td><strong>AngelList</strong></td>
+                    <td><a target="_blank" href="{{ startup.angellist_url }}">{{ startup.angellist_url }}</a></td>
+                </tr>
+            {% endif %}
+            {% if startup.twitter_url %}
+                <tr>
+                    <td><strong>Twitter</strong></td>
+                    <td><a target="_blank" href="{{ startup.twitter_url }}">{{ startup.twitter_url }}</a></td>
+                </tr>
+            {% endif %}
+            {% if startup.linkedin_url %}
+                <tr>
+                    <td><strong>LinkedIn</strong></td>
+                    <td><a target="_blank" href="{{ startup.linkedin_url }}">{{ startup.linkedin_url }}</a></td>
+                </tr>
+            {% endif %}
+            {% if startup.facebook_url %}
+                <tr>
+                    <td><strong>Facebook</strong></td>
+                    <td><a target="_blank" href="{{ startup.facebook_url }}">{{ startup.facebook_url }}</a></td>
+                </tr>
+            {% endif %}
+        </table>
+    </div>
+    <div class="col-sm-5">
+        <h3>Notes</h3>
+        {% for note in startup.notes.all %}
+            <div class="panel">
+                <div class="panel-header note-header">
+                    {{ note.owner.name }}
+                </div>
+                <div class="panel-body">
+                    <p class="note-text">{{ note.text }}</p>
+                    <br/>
+                    <div class="note-footer">
+                        <a href="{% url 'radar_access:note_delete' note.id %}">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        <form role="form" method="post" action="{% url 'radar_access:startup_detail' startup.id %}">
+            {% csrf_token %}
+            {{ note_form|bootstrap }}
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">Add Note</button>
+            </div>
+        </form>
+        <!--<h3>News &amp; Updates</h3>
+        <ul>
+            <li><strong>Aug 17</strong>: (Examples) New employee added.</li>
+            <li><strong>July 27</strong>: Beta version released.</li>
+            <li><strong>June 18</strong>: Facebook post or news article.</li>
+            <li><strong>June 6</strong>: More functionality to come.</li>
+        </ul>-->
+    </div>
+</div>
+<script src="{% static "radar_access/desc.js" %}"></script>
+{% endblock %}

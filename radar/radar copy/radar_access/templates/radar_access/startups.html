@@ -1,0 +1,25 @@
+{% extends "radar_access/base.html" %}
+
+{% block title %}My Startups{% endblock %}
+
+{% block header %}
+<h1>My Startups</h1>
+<p class="help-block">View your favorite startups.</p>
+{% endblock %}
+
+{% block content %}
+
+{% if startups %}
+    {% include "radar_access/startup_table.html" %}
+{% else %}
+<div class="row text-center">
+    <p class="lead">
+        You haven't followed any startups yet!
+    </p>
+    <p class="help-block">
+        You can follow startups from the discover page.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}

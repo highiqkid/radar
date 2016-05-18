@@ -1,0 +1,29 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login</title>
+    
+    <script src="{% static "radar_access/jquery.min.js" %}"></script>
+    <script src="{% static "radar_access/bootstrap.min.js" %}"></script>
+    
+    <link rel="stylesheet" type="text/css" href="{% static "radar_access/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "radar_access/font-awesome.min.css" %}">
+    
+    <link rel="stylesheet" type="text/css" href="{% static "radar_access/sidebar.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "radar_access/main.css" %}">
+</head>
+<body>
+    <br/><br/>
+    <div class="container panel text-center">
+        <h1>Welcome to Radar VC.</h1>
+        <p class="lead">Please login to continue.</p>
+        <a class="btn btn-lg btn-social btn-google" href="{% url 'social:begin' 'google-oauth2' %}?next={{ request.path }}">
+            <i class="fa fa-google"></i>&nbsp;&nbsp;
+            Login with Google
+        </a>
+        <br/><br/>
+    </div>
+</body>
+</html>

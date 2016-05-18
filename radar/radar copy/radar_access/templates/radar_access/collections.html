@@ -1,0 +1,67 @@
+{% extends "radar_access/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}My Collections{% endblock %}
+
+{% block header %}
+<h1>My Startup Collections</h1>
+<p class="help-block">Collections of startups you like.</p>
+{% endblock %}
+
+{% block content %}
+
+{% if collections %}
+<div class="row">
+    <div class="col-sm-2"></div>
+    <div class="col-sm-8">
+        <table class="table table-striped">
+            <tr>
+                <th>Name</th>
+                <th>Startups</th>
+            </tr>
+            {% for collection in collections %}
+            <tr>
+                <td>
+                    <a href="{% url 'radar_access:collection_detail' collection.id %}">{{ collection.name }}</a>
+                </td>
+                <td>{{ collection.startups.all.count }}</td>
+                <td>
+                    <a class="btn btn-danger" href="{% url 'radar_access:collection_delete' collection.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="col-sm-2"></div>
+</div>
+{% else %}
+<div class="row text-center">
+<p class="lead">You don't currently have any collections.  Click "Create New" to make one!</p>
+{% endif %}
+</div>
+
+<div class="row text-center">
+    <div class="col-sm-4"></div>
+    <div class="col-sm-4">
+        <a href="#" data-href="{% url 'radar_access:new_collection' %}" id="new-collection-btn" class="btn btn-primary">
+            Create New
+        </a>
+        <form id="new-collection-form" role="form" method="post" action="/collections/new/" style="display:none">
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group col-xs-8">
+                    <input class="form-control" type="text" placeholder="Collection Name" name="collection_name">
+                </div>
+                <div class="form-group col-xs-4">
+                   <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-sm-4"></div>
+</div>
+
+<script src="{% static "radar_access/collection_form.js" %}"></script>
+
+{% endblock %}

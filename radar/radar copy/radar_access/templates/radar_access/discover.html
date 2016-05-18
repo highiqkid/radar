@@ -1,0 +1,69 @@
+{% extends "radar_access/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}Discover Startups{% endblock %}
+
+{% block header %}
+<h1>Self Discover Page</h1>
+<p class="help-block">Startups you need to check out.</p>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-sm-6 text-left">
+        Filter returned {{ num_results.0 }} out of {{ num_results.1 }} total startups.
+    </div>
+    <div class="col-sm-6 text-right">
+        <div class="row">
+            <div class="col-xs-8">
+                <a href="#" id="new-collection-btn" class="btn btn-primary">
+                    Save as New Collection
+                </a>
+                <form id="new-collection-form" role="form" method="post" action="{% url 'radar_access:filter_save' %}" style="display:none">
+                    {% csrf_token %}
+                    <div class="row text-left">
+                        <div class="form-group col-xs-10">
+                            <input class="form-control" type="text" placeholder="Collection Name" name="collection_name">
+                        </div>
+                        <div class="form-group col-xs-2">
+                           <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-xs-4">
+                {% if user.profile.collections.all.count > 0 %}
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Add
+                    <span class="caret"></span></button>
+                    <ul class="dropdown-menu">
+                        {% for c in user.profile.collections.all %}
+                            {% if not startup in c.startups.all %}
+                            <li>
+                                <a href="{% url 'radar_access:filter_save' %}?collection={{ c.id }}">
+                                    {{ c.name }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{% static "radar_access/collection_form.js" %}"></script>
+<br/>
+{% if startups %}
+    {% include "radar_access/startup_table.html" %}
+{% else %}
+<div class="row text-center">
+    <p class="lead">No startups found.</p>
+    <p class="help-block">Try widening your search on the filter page.</p>
+</div>
+{% endif %}
+
+{% endblock %}

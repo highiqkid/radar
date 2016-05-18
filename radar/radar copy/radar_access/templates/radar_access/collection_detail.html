@@ -1,0 +1,29 @@
+{% extends "radar_access/base.html" %}
+
+{% load staticfiles %}
+
+{% block title %}{{ collection.name }}{% endblock %}
+
+{% block header %}
+<h1>{{ collection.name }}</h1>
+{% endblock %}
+
+{% block content %}
+
+{% if startups %}
+<div class="row text-right">
+    Showing {{ startups|length }} of {{ collection.startups.all.count }} startups
+</div>
+{% include "radar_access/startup_table.html" %}
+{% else %}
+<div class="row text-center">
+    <p class="lead">
+        You haven't added any startups yet!
+    </p>
+    <p class="help-block">
+        You can add startups to collections from the discover page.
+    </p>
+</div>
+{% endif %}
+
+{% endblock %}
